@@ -4,7 +4,7 @@
 - Clone
 - npm install
 - gulp
-- Open http://127.0.0.1:9000 in the browser
+- Open http://127.0.0.1:7000 in the browser
 
 ## Technologies used:
 
