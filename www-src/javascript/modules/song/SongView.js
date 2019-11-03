@@ -1,11 +1,12 @@
+
 var _ = require('underscore');
 var BaseView = require('../../base/BaseView.js');
-var viewTemplate = require('./templates/help.html');
+var viewTemplate = require('./templates/song.html');
 
-var HelpView = BaseView.extend({
+var SongView = BaseView.extend({
 
     template: _.template(viewTemplate),
-    el: '#help',
+    el: '#song',
 
     events: {
         'click button': 'buttonPressed'
@@ -22,4 +23,4 @@ var HelpView = BaseView.extend({
     }
 });
 
-module.exports = HelpView;
+module.exports = SongView;

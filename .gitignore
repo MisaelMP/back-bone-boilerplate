@@ -3,3 +3,4 @@ platforms/android/assets/www
 platforms/ios/www
 www
 npm-debug.log
+node_modules/

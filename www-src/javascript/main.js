@@ -1,12 +1,12 @@
-var Backbone = require('backbone');
-var HelpRouter = require('./modules/help/HelpRouter.js');
-var StartRouter = require('./modules/start/StartRouter.js');
+const Backbone = require('backbone');
+const SongRouter = require('./modules/song/SongRouter.js');
+const StartRouter = require('./modules/start/StartRouter.js');
 
-var App = {
+const App = {
     initialize : function() {
 
         new StartRouter();
-        new HelpRouter();
+        new SongRouter();
         Backbone.history.start();
     }
 };

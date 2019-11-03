@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var $ = require('jquery');
+const Backbone = require('backbone');
+const $ = require('jquery');
 
-var BaseRouter = Backbone.Router.extend({
+const BaseRouter = Backbone.Router.extend({
 
     showPage : function(name,callback) {
 

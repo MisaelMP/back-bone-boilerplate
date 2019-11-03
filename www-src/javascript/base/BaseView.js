@@ -1,7 +1,7 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
+const _ = require('underscore');
+const Backbone = require('backbone');
 
-var BaseView = Backbone.View.extend({
+const BaseView = Backbone.View.extend({
 
     template: null,
     el: null,

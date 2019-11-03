@@ -1,79 +1,102 @@
 var gulp = require('gulp'),
-    browserify = require('browserify'),
-    source = require('vinyl-source-stream'),
-    sass = require('gulp-ruby-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
-    minifycss = require('gulp-minify-css'),
-    uglify = require('gulp-uglify'),
-    rename = require('gulp-rename'),
-    del = require('del'),
-    nodemon = require('gulp-nodemon'),
-    buffer = require('vinyl-buffer'),
-    sourcemaps = require('gulp-sourcemaps'),
-    gutil = require('gulp-util'),
-    p = require('partialify');
-
+	browserify = require('browserify'),
+	source = require('vinyl-source-stream'),
+	sass = require('gulp-ruby-sass'),
+	autoprefixer = require('gulp-autoprefixer'),
+	minifycss = require('gulp-minify-css'),
+	uglify = require('gulp-uglify'),
+	rename = require('gulp-rename'),
+	del = require('del'),
+	nodemon = require('gulp-nodemon'),
+	buffer = require('vinyl-buffer'),
+	sourcemaps = require('gulp-sourcemaps'),
+	gutil = require('gulp-util'),
+	p = require('partialify'),
+	browserSync = require('browser-sync').create(),
+	notify = require('gulp-notify');
 
 function handleError(level, error) {
-   gutil.log(error.message);
-   process.exit(1);
+	gutil.log(error.message);
+	process.exit(1);
 }
 
 // Convenience handler for error-level errors.
-function onError(error) { handleError.call(this, 'error', error);}
+function onError(error) {
+	handleError.call(this, 'error', error);
+}
 
 
 gulp.task('clean', function() {
-  del(['www/css', 'www/javascript']);
+	del(['www/css', 'www/javascript']);
 });
 
 gulp.task('styles', function() {
-  return sass('www-src/sass/main.scss',{ style: 'expanded' })
-    .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-    .pipe(gulp.dest('www/css'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
-    .pipe(gulp.dest('www/css'));
+	return sass('www-src/sass/main.scss', {
+			style: 'expanded'
+		})
+		.pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
+		.pipe(gulp.dest('www/css'))
+		.pipe(rename({
+			suffix: '.min'
+		}))
+		.pipe(minifycss())
+		.pipe(gulp.dest('www/css'))
+		.pipe(browserSync.stream())
 });
 
 
 gulp.task('browserify', function() {
-    var b = browserify({
-        entries: './www-src/javascript/main.js',
-        debug: true
-    });
+	var b = browserify({
+		entries: './www-src/javascript/main.js',
+		debug: true
+	});
 
-    return b.transform(p)
-        .bundle()
-        .on('error', onError)
-        .pipe(source('main.js'))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./www/'));
+	return b.transform(p)
+		.bundle()
+		.on('error', onError)
+		.pipe(source('main.js'))
+		.pipe(buffer())
+		.pipe(uglify())
+		.pipe(sourcemaps.init({
+			loadMaps: true
+		}))
+		.pipe(sourcemaps.write('./'))
+		.pipe(gulp.dest('./www/'))
 });
-gulp.task( 'html', function(){
-    gulp.src( 'www-src/index.html' )
-        .pipe( gulp.dest( 'www/' ) )
-} );
 
-gulp.task('default', ['clean','html','styles','browserify','connect'], function() {
+gulp.task('html', function() {
+	gulp.src('www-src/index.html')
+		.pipe(gulp.dest('www/'))
+});
 
-  // Watch .scss files
-  gulp.watch('www-src/sass/**/*.scss', ['styles']);
+gulp.task('default', ['clean', 'html', 'styles', 'browserify', 'connect', 'sync'], function() {
 
-  // Watch .js files
-  gulp.watch('www-src/javascript/**/*.js', ['browserify']);
+	// Watch .scss files
+	gulp.watch('www-src/sass/**/*.scss', ['styles']);
 
-  // Watch .html files
-  gulp.watch('www-src/**/*.html', ['html', 'browserify']);
+	// Watch .js files
+	gulp.watch('www-src/javascript/**/*.js', ['browserify']).on("change", browserSync.reload);
 
+	// Watch .html files
+	gulp.watch('www-src/**/*.html', ['html', 'browserify']).on("change", browserSync.reload);
+
+});
+
+gulp.task('sync', function() {
+	browserSync.init({
+	    proxy: "http://localhost:9000",
+	    files: ["www/**/*.*"],
+	    reloadDelay: 2000,
+	    port: 7000,
+	  });
 });
 
 gulp.task('connect', function() {
-    nodemon({
-        script: './server/server.js',
-        ext: 'js html scss css map',
-        env: { 'NODE_ENV': 'development' }
-    })
+	nodemon({
+		script: './server/server.js',
+		ext: 'js html scss css map',
+		env: {
+			'NODE_ENV': 'development'
+		}
+	});
 });
