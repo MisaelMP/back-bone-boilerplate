@@ -17,7 +17,7 @@
     "browser-sync": "^2.26.7",
     "browserify": "^10.2.1",
     "del": "^1.1.1",
-    "express": "^4.12.3",
+    "express": "^4.17.3",
     "gulp": "^3.8.11",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-brfs": "^0.1.0",
